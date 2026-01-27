@@ -1,10 +1,33 @@
 const express = require('express');
 const {connectDB} = require("./config/database")
+const User = require("./models/user")
 
 const { adminAuth, userAuth } = require("./middlewares/auth")
 
 
-const app = express()
+const app = express()   
+
+
+app.post("/signup", async (req, res)=>{
+    const userDetails = {
+        firstName: "AjithKumar",
+        lastName: "Singh",
+        emailId:"ajithkumar4907@hotmail.com",
+        password:"ajithkumar2012",
+        age:26,
+        gender:"Male"
+    }
+
+    const user = new User(userDetails)  
+    try{
+        await user.save()
+        res.send("User added successfully")
+    }
+    catch(err){
+        res.status(500).send("There is an error")
+    }
+
+})
 
 
 connectDB()
@@ -18,25 +41,5 @@ connectDB()
     console.error("database not connected")
 })
 
-// app.use("/", (err,req, res, next)=>{
-//     if(err){
-//         res.status(500).send("Something went wrong  ")
-//     }
-// })
 
-
-// app.get("/user", (req, res)=>{
-    // try{
-        // throw new Error("not found")
-        // res.send("User data")
-//     }catch(err){
-//         res.status(500).send("Error contact support team")
-//     }
-// })
-
-// app.use("/", (err,req, res, next)=>{
-//     if(err){
-//         res.status(500).send("Something went wrong  ")
-//     }
-// })
 
