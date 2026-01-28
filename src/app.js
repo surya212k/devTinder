@@ -25,6 +25,32 @@ app.post("/signup", async (req, res)=>{
 
 })
 
+app.get("/user", async (req, res) =>{
+    const userEmail = req.body.emailId
+
+    try{
+        const email = await User.findOne({emailId: userEmail})
+        if(email.length === 0){
+            res.send("User not found")
+        }else{
+            res.send(email)
+        }
+    }catch(err){
+        res.status(500).send("Something went wrong")
+    }
+})
+
+app.get("/feed", async (req, res)=>{
+
+    try{
+        const users = await User.find({})
+        res.send(users)
+    }catch(err){
+        res.status(500).send("Something went wrong")
+    }
+
+})
+
 
 connectDB()
 .then(() =>{
