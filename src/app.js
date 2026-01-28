@@ -1,24 +1,20 @@
 const express = require('express');
 const {connectDB} = require("./config/database")
 const User = require("./models/user")
+require('dotenv').config()
+
 
 const { adminAuth, userAuth } = require("./middlewares/auth")
 
 
 const app = express()   
 
+app.use(express.json())
+
 
 app.post("/signup", async (req, res)=>{
-    const userDetails = {
-        firstName: "AjithKumar",
-        lastName: "Singh",
-        emailId:"ajithkumar4907@hotmail.com",
-        password:"ajithkumar2012",
-        age:26,
-        gender:"Male"
-    }
 
-    const user = new User(userDetails)  
+    const user = new User(req.body)  
     try{
         await user.save()
         res.send("User added successfully")
