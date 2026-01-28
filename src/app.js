@@ -29,14 +29,14 @@ app.get("/user", async (req, res) =>{
     const userEmail = req.body.emailId
 
     try{
-        const email = await User.findOne({emailId: userEmail})
-        if(email.length === 0){
+        const users = await User.findOne({emailId: userEmail})
+        if(users.length === 0){
             res.send("User not found")
         }else{
-            res.send(email)
+            res.send(users)
         }
     }catch(err){
-        res.status(500).send("Something went wrong")
+        res.status(400).send("Something went wrong")
     }
 })
 
@@ -51,6 +51,52 @@ app.get("/feed", async (req, res)=>{
 
 })
 
+app.get("/userId", async (req, res)=>{
+    const id = req.body.userId
+
+    try{
+        const users = await User.findById(id)
+        if(!users){
+            res.status(404).send("User not found")
+        }else{
+            res.send(users)
+        }
+    }catch(err){
+        res.status(400).send("Something went wrong")
+    }
+})
+
+
+app.delete("/user", async(req, res)=>{
+    const id = req.body.userId
+
+    try{
+        const users = await User.findByIdAndDelete(id)
+        if(!users){
+            res.status(400).send("User not found")
+        }else{
+            res.send("User deleted successfully")
+        }
+    }catch(err){
+        res.status(400).send("Something went wrong")
+    }   
+})
+
+
+app.patch("/user", async(req, res)=>{
+    const email = req.body.emailId
+    const data = req.body
+    try{
+        const users = await User.updateOne({emailId: email}, data)
+        if(!users){
+            res.status(400).send("user not found")
+        }else{
+            res.send("User updated successfully")
+        }
+    }catch(err){
+        res.status(400).send("Something went wrong")
+    }
+})
 
 connectDB()
 .then(() =>{
