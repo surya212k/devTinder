@@ -83,10 +83,23 @@ app.delete("/user", async(req, res)=>{
 })
 
 
-app.patch("/user", async(req, res)=>{
-    const id = req.body.userId
+app.patch("/user/:userId", async(req, res)=>{
+    const id = req.params.userId
     const data = req.body
+    console.log(id)
+    console.log(data)
     try{
+        const allowedUpdates = ["age", "gender", "skills", "about"]
+        const isAllowedUpdate = Object.keys(data).every((k)=>{
+            return allowedUpdates.includes(k)
+        })
+        console.log(isAllowedUpdate)
+        if(!isAllowedUpdate){
+            return res.status(400).send("Invalid updates")
+        }
+        if(data?.skills.length > 2){
+            return res.status(400).send("Invalid updates")
+        }
         const users = await User.findByIdAndUpdate({_id:id}, data, {runValidators: true})
         if(!users){
             res.status(400).send("user not found")
