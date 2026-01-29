@@ -20,7 +20,7 @@ app.post("/signup", async (req, res)=>{
         res.send("User added successfully")
     }
     catch(err){
-        res.status(500).send("There is an error")
+        res.status(500).send("There is an error"+err.message)
     }
 
 })
@@ -84,17 +84,17 @@ app.delete("/user", async(req, res)=>{
 
 
 app.patch("/user", async(req, res)=>{
-    const email = req.body.emailId
+    const id = req.body.userId
     const data = req.body
     try{
-        const users = await User.updateOne({emailId: email}, data)
+        const users = await User.findByIdAndUpdate({_id:id}, data, {runValidators: true})
         if(!users){
             res.status(400).send("user not found")
         }else{
             res.send("User updated successfully")
         }
     }catch(err){
-        res.status(400).send("Something went wrong")
+        res.status(400).send("Something went wrong"+err.message)
     }
 })
 
