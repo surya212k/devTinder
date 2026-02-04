@@ -1,4 +1,5 @@
 const mongoose = require("mongoose")
+const validator = require("validator")
 
 const userSchema = new mongoose.Schema({
     firstName: {
@@ -17,12 +18,22 @@ const userSchema = new mongoose.Schema({
         required: true,
         lowercase:true,
         trim:true,
+        validate(value){
+            if(!validator.isEmail(value)){
+                throw new Error("Invalid Email")
+            }
+        }
     },
     password:{
         type:String,
         required: true,
         minLength:6,
         trim:true,
+        validate(value){
+            if(!validator.isStrongPassword(value)){
+                throw new Error("It is a weak password")
+            }
+        }
     },
     age:{
         type:Number,
@@ -38,7 +49,8 @@ const userSchema = new mongoose.Schema({
     },
     photoURL:{
         type:String,
-        default:"https://www.pngall.com/wp-content/uploads/5/Profile-PNG-High-Quality-Image.png"
+        default:"https://www.pngall.com/wp-content/uploads/5/Profile-PNG-High-Quality-Image.png",
+        
     },
     about:{
         type:String,
