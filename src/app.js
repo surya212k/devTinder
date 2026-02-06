@@ -6,6 +6,7 @@ const {validateSignUpData} = require("./utils/validation")
 const bcrypt = require("bcrypt")
 const cookieParser = require("cookie-parser")
 const jwt = require("jsonwebtoken")
+const {userAuth} = require("./middlewares/auth")
 
 const app = express()   
 
@@ -70,31 +71,26 @@ app.post("/login", async (req, res) =>{
         
 })
 
-app.get("/profile", async(req, res)=>{
-
+app.get("/profile", userAuth, async(req, res)=>{
     try{
-        const {token} = req.cookies
-
-
-        if(!token){
-            throw new Error("Invalid token")
-        }
+        const user = req.user
         
-        const dedcodedMessage = jwt.verify(token , "DEvtinder@")
-
-        const { _id } = dedcodedMessage
-
-        const user = await User.findOne({_id: _id})
-
-        if(!user){
-            throw new Error("User not found")
-        }
-
         res.send(user)
-    } catch(err){
-        res.status(400).send("ERROR: "+ err.message)
+    }catch(err){
+        res.status(400).send("ERROR: "+err.message)
     }
+    
+})
 
+app.post("/sendConnectionRequest", userAuth, async(req, res)=>{
+    try{
+        const user = req.user
+
+        res.send(user.firstName + " sent the connection request")
+
+    }catch(err){
+        res.status(400).send("ERROR: "+err.message)
+    }
 })
 
 app.get("/user", async (req, res) =>{
