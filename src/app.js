@@ -4,11 +4,13 @@ const User = require("./models/user")
 require('dotenv').config()
 const {validateSignUpData} = require("./utils/validation")
 const bcrypt = require("bcrypt")
-
+const cookieParser = require("cookie-parser")
+const jwt = require("jsonwebtoken")
 
 const app = express()   
 
 app.use(express.json())
+app.use(cookieParser())
 
 
 app.post("/signup", async (req, res)=>{
@@ -50,6 +52,13 @@ app.post("/login", async (req, res) =>{
         const isPasswordValid = await bcrypt.compare(password, user.password)
         
         if(isPasswordValid){
+
+            const _id = {_id: user._id}
+
+            const token = jwt.sign(_id, "DEvtinder@")
+
+            res.cookie("token",token)
+
             res.send("Login successful")
         }
         else{
@@ -59,6 +68,33 @@ app.post("/login", async (req, res) =>{
         res.status(400).send("ERROR: "+err.message)
     }
         
+})
+
+app.get("/profile", async(req, res)=>{
+
+    try{
+        const {token} = req.cookies
+
+
+        if(!token){
+            throw new Error("Invalid token")
+        }
+        
+        const dedcodedMessage = jwt.verify(token , "DEvtinder@")
+
+        const { _id } = dedcodedMessage
+
+        const user = await User.findOne({_id: _id})
+
+        if(!user){
+            throw new Error("User not found")
+        }
+
+        res.send(user)
+    } catch(err){
+        res.status(400).send("ERROR: "+ err.message)
+    }
+
 })
 
 app.get("/user", async (req, res) =>{
