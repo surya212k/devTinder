@@ -44,12 +44,6 @@ profileRouter.patch("/profile/edit", userAuth, async(req, res)=>{
 profileRouter.patch("/profile/password", userAuth, async (req, res)=>{
         try{
 
-            const {token} = req.cookies
-
-            if(!token){
-                throw new Error("User not logged in")
-            }
-
             const {currentPassword, changePassword} = req.body
 
             const user = req.user
